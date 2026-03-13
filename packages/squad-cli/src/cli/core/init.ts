@@ -4,12 +4,16 @@
  */
 
 import path from 'node:path';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
 import { detectSquadDir } from './detect-squad-dir.js';
-import { success, BOLD, RESET, YELLOW, GREEN, DIM } from './output.js';
+import { success, warn, BOLD, RESET, YELLOW, GREEN, DIM } from './output.js';
 import { fatal } from './errors.js';
 import { detectProjectType } from './project-type.js';
 import { getPackageVersion } from './version.js';
 import { initSquad as sdkInitSquad, cleanupOrphanInitPrompt, type InitOptions } from '@bradygaster/squad-sdk';
+
+const execAsync = promisify(exec);
 
 const CYAN = '\x1b[36m';
 
@@ -54,6 +58,7 @@ const INIT_LANDMARKS = [
   { emoji: '🔧', label: 'Workflows & CI' },
   { emoji: '🧠', label: 'Identity & wisdom' },
   { emoji: '🤖', label: 'Copilot agent prompt' },
+  { emoji: '🔌', label: 'Copilot plugin' },
 ];
 
 /**
@@ -82,6 +87,24 @@ export interface RunInitOptions {
 }
 
 /**
+ * Attempt to install the Squad Copilot plugin.
+ * Blocks until complete. If the copilot CLI is not available, warns and returns false.
+ * Uses exec (not execFile) so .cmd/.bat wrappers resolve on Windows.
+ */
+async function tryInstallPlugin(): Promise<boolean> {
+  try {
+    await execAsync('copilot plugin install bradygaster/squad', {
+      timeout: 30_000,
+    });
+    success('Copilot plugin installed');
+    return true;
+  } catch {
+    warn('Copilot plugin install failed — install manually with: copilot plugin install bradygaster/squad');
+    return false;
+  }
+}
+
+/**
  * Main init command handler
  */
 export async function runInit(dest: string, options: RunInitOptions = {}): Promise<void> {
@@ -100,6 +123,11 @@ export async function runInit(dest: string, options: RunInitOptions = {}): Promi
   // Show deprecation warning if using .ai-team/
   if (squadInfo.isLegacy) {
     showDeprecationWarning();
+  }
+
+  // Install Copilot plugin (skipped in CI/test)
+  if (!process.env['CI'] && !process.env['VITEST']) {
+    await tryInstallPlugin();
   }
 
   // Build SDK options

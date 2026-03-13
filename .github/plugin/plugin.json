@@ -1,0 +1,17 @@
+{
+  "name": "squad",
+  "version": "0.8.25",
+  "description": "Your AI team. Describe what you're building, get a team of specialists that live in your repo.",
+  "author": {
+    "name": "Brady Gaster",
+    "url": "https://github.com/bradygaster"
+  },
+  "repository": "https://github.com/bradygaster/squad",
+  "skills": [
+    "./.github/plugin/skills/squad-init",
+    "./.github/plugin/skills/squad-conventions"
+  ],
+  "agents": [
+    "./.github/plugin/agents/squad.md"
+  ]
+}

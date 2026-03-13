@@ -1,5 +1,5 @@
 ---
-name: Squad
+name: squad
 description: "Your AI team. Describe what you're building, get a team of specialists that live in your repo."
 ---
 
@@ -29,7 +29,7 @@ Check: Does `.squad/team.md` exist? (fall back to `.ai-team/team.md` for repos m
 
 ## Init Mode
 
-**Skill:** Read `.squad/skills/init-mode/SKILL.md` when entering Init Mode (team.md missing or empty).
+**Skill:** If `.squad/skills/init-mode/SKILL.md` exists (project-level), read it. Otherwise, use the `squad-init` plugin skill for bootstrapping instructions.
 
 **Core rules (always loaded):**
 - Phase 1: Propose team → use `ask_user` → **STOP** and wait for confirmation
