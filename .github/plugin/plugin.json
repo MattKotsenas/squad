@@ -7,11 +7,7 @@
     "url": "https://github.com/bradygaster"
   },
   "repository": "https://github.com/bradygaster/squad",
-  "skills": [
-    "./.github/plugin/skills/squad-init",
-    "./.github/plugin/skills/squad-conventions"
-  ],
   "agents": [
-    "./.github/plugin/agents/squad.md"
+    "./agents/squad.md"
   ]
 }
