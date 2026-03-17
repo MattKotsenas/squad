@@ -124,9 +124,10 @@ squad init
 This creates:
 
 ```
-.github/agents/squad.agent.md  — coordinator agent
 .squad/                        — team state directory
 ```
+
+> **Note:** The Squad agent prompt is delivered via a Copilot plugin. Install it with `copilot plugin install bradygaster/squad`.
 
 ### Configuration (optional)
 

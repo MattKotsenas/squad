@@ -29,7 +29,7 @@ npx github:bradygaster/squad#insider
 npx github:bradygaster/squad#insider upgrade
 ```
 
-This updates Squad-owned files (`squad.agent.md`, workflows, templates) to the latest insider build. Your `.squad/` team state (agents, decisions, casting, history) is always preserved.
+This updates Squad-owned files (workflows, templates) to the latest insider build. The agent prompt is updated via the Copilot plugin. Your `.squad/` team state (agents, decisions, casting, history) is always preserved.
 
 ---
 
@@ -66,10 +66,10 @@ Where:
 - `insider` — Insider build flag
 - `abc1234f` — Commit hash (first 8 chars)
 
-You'll see this in your `squad.agent.md` HTML version comment:
+You'll see this in your `.squad/config.json` version field:
 
-```markdown
-<!-- version: v0.5.2-insider+abc1234f -->
+```json
+{ "version": "v0.5.2-insider+abc1234f" }
 ```
 
 **Pin a specific tagged version:**
@@ -86,7 +86,7 @@ Found a bug? We want to hear about it.
 
 **Open a GitHub issue** with:
 
-1. **Version** — Full version from your `squad.agent.md`
+1. **Version** — Full version from your `.squad/config.json`
 2. **What happened** — Clear description of the bug
 3. **Steps to reproduce** — Exact steps to trigger it
 4. **Environment** — CLI or VS Code, Node version, OS
@@ -104,7 +104,7 @@ Environment: CLI on macOS 14.1, Node 20.11.0
 Steps:
 1. npx github:bradygaster/squad#insider
 2. Follow quick start
-3. Error in squad.agent.md...
+3. Error during initialization...
 ```
 
 ---

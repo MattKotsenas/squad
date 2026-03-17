@@ -18,10 +18,10 @@ You'll see:
 
 ```
 ✅ Squad installed.
-   .github/agents/squad.agent.md — coordinator agent
    .ai-team-templates/ — 11 template files
 
-Open GitHub Copilot and select Squad from the agent list.
+Install the Copilot plugin: copilot plugin install bradygaster/squad
+Then select Squad from the agent list.
 ```
 
 ---

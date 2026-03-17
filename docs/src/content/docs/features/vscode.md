@@ -27,7 +27,7 @@ This guide covers what's different, what's the same, and when to use CLI vs VS C
 npm install -g @bradygaster/squad-cli
 ```
 
-Creates `.github/agents/squad.agent.md` and `.squad/templates/`. Then open VS Code and select **Squad** from the agent picker.
+Creates `.squad/templates/`. Install the Copilot plugin (`copilot plugin install bradygaster/squad`), then open VS Code and select **Squad** from the agent picker.
 
 **Option B: Fresh in VS Code**
 

@@ -33,7 +33,7 @@ npx github:bradygaster/squad
 - A git repository (Squad stores team state in `.ai-team/`)
 - **`gh` CLI** — required for GitHub Issues, PRs, Ralph, and Project Boards ([install](https://cli.github.com/))
 
-This copies `squad.agent.md` into `.github/agents/`, installs 10 GitHub Actions workflows into `.github/workflows/`, and adds templates to `.ai-team-templates/`. Your actual team (`.ai-team/`) is created at runtime when you first talk to Squad.
+This installs 10 GitHub Actions workflows into `.github/workflows/` and adds templates to `.ai-team-templates/`. Your actual team (`.ai-team/`) is created at runtime when you first talk to Squad. The Squad agent prompt is delivered via a Copilot plugin - install it with `copilot plugin install bradygaster/squad`.
 
 **Note:** When you select Squad from the agent picker, you'll see the version number in the name (e.g., "Squad (v0.3.0)"). This helps you confirm which version is installed.
 
@@ -411,7 +411,7 @@ Already have Squad installed? Update to the latest version:
 npx github:bradygaster/squad upgrade
 ```
 
-This overwrites `squad.agent.md` and `.ai-team-templates/` with the latest versions. It **never touches `.ai-team/`** — your team's knowledge, decisions, casting state, and skills are safe.
+This updates `.ai-team-templates/` with the latest versions and the Copilot plugin delivers the latest agent prompt. It **never touches `.ai-team/`** — your team's knowledge, decisions, casting state, and skills are safe.
 
 Smart upgrade detects your installed version, reports what changed, and runs any needed migrations (e.g., creating `.ai-team/skills/` if it didn't exist). Migrations are additive and idempotent — safe to re-run.
 
@@ -423,7 +423,7 @@ Each agent runs in its own context window. Real numbers:
 
 | What | Tokens | % of 200K window |
 |------|--------|-------------------|
-| Coordinator (squad.agent.md) | ~13,200 | 6.6% |
+| Coordinator (plugin-delivered prompt) | ~13,200 | 6.6% |
 | Agent at Week 1 (charter + seed history + decisions) | ~1,250 | 0.6% |
 | Agent at Week 4 (+ 15 learnings, 8 decisions) | ~3,300 | 1.7% |
 | Agent at Week 12 (+ 50 learnings, 47 decisions) | ~9,000 | 4.5% |
@@ -483,7 +483,7 @@ Squad maintains a clear ownership model:
 
 | What | Owner | Safe to edit? |
 |------|-------|--------------|
-| `.github/agents/squad.agent.md` | Squad (overwritten on upgrade) | No — your changes will be lost |
+| Squad agent prompt (Copilot plugin) | Squad (updated via plugin) | No — delivered by the plugin |
 | `.ai-team-templates/` | Squad (overwritten on upgrade) | No |
 | `.ai-team/` | You and your team | Yes — this is your team's state |
 | Everything else | You | Yes |
