@@ -57,7 +57,6 @@ const INIT_LANDMARKS = [
   { emoji: '📋', label: 'Skills & ceremonies' },
   { emoji: '🔧', label: 'Workflows & CI' },
   { emoji: '🧠', label: 'Identity & wisdom' },
-  { emoji: '🤖', label: 'Copilot agent prompt' },
   { emoji: '🔌', label: 'Copilot plugin' },
 ];
 
@@ -88,10 +87,12 @@ export interface RunInitOptions {
 
 /**
  * Attempt to install the Squad Copilot plugin.
- * Blocks until complete. If the copilot CLI is not available, warns and returns false.
+ * Backwards-compat entrypoint: users with muscle memory running `squad-cli init`
+ * still get the plugin installed. The plugin is the primary distribution channel
+ * for the agent prompt; the CLI only manages .squad/ team state.
  * Uses exec (not execFile) so .cmd/.bat wrappers resolve on Windows.
  */
-async function tryInstallPlugin(): Promise<boolean> {
+export async function tryInstallPlugin(): Promise<boolean> {
   try {
     await execAsync('copilot plugin install bradygaster/squad', {
       timeout: 30_000,

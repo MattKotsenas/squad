@@ -6,6 +6,8 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { success, warn, info, dim, bold } from './output.js';
@@ -15,6 +17,7 @@ import { TEMPLATE_MANIFEST, getTemplatesDir } from './templates.js';
 import { runMigrations } from './migrations.js';
 import { scrubEmails } from './email-scrub.js';
 
+const execAsync = promisify(exec);
 const currentFile = fileURLToPath(import.meta.url);
 const currentDir = dirname(currentFile);
 
@@ -31,12 +34,21 @@ export interface UpdateInfo {
 }
 
 /**
- * Read version from squad.agent.md HTML comment
+ * Read installed Squad version.
+ * Checks .squad/config.json first (new format), falls back to squad.agent.md (pre-plugin migration).
  */
-function readInstalledVersion(agentPath: string): string {
+function readInstalledVersion(squadDir: string, legacyAgentPath: string): string {
   try {
-    if (!fs.existsSync(agentPath)) return '0.0.0';
-    const content = fs.readFileSync(agentPath, 'utf8');
+    // Prefer config.json (new format — plugin model)
+    const configPath = path.join(squadDir, 'config.json');
+    if (fs.existsSync(configPath)) {
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      if (config.installedVersion) return config.installedVersion;
+    }
+    
+    // Fallback to squad.agent.md (pre-plugin migration)
+    if (!fs.existsSync(legacyAgentPath)) return '0.0.0';
+    const content = fs.readFileSync(legacyAgentPath, 'utf8');
     
     // Try HTML comment first (new format)
     const commentMatch = content.match(/<!-- version: ([0-9.]+(?:-[a-z]+(?:\.\d+)?)?) -->/);
@@ -73,21 +85,75 @@ function compareSemver(a: string, b: string): number {
 }
 
 /**
- * Stamp version into squad.agent.md after copying
+ * Write installed version to .squad/config.json.
  */
-function stampVersion(filePath: string, version: string): void {
-  let content = fs.readFileSync(filePath, 'utf8');
-  
-  // Replace version in HTML comment
-  content = content.replace(/<!-- version: [^>]+ -->/m, `<!-- version: ${version} -->`);
-  
-  // Replace version in Identity section's Version line
-  content = content.replace(/- \*\*Version:\*\* [0-9.]+(?:-[a-z]+(?:\.\d+)?)?/m, `- **Version:** ${version}`);
-  
-  // Replace {version} placeholder
-  content = content.replace(/`Squad v\{version\}`/g, `\`Squad v${version}\``);
-  
-  fs.writeFileSync(filePath, content);
+function writeVersionToConfig(squadDir: string, version: string): void {
+  const configPath = path.join(squadDir, 'config.json');
+  let config: Record<string, unknown> = {};
+  if (fs.existsSync(configPath)) {
+    try { config = JSON.parse(fs.readFileSync(configPath, 'utf8')); } catch { /* start fresh */ }
+  }
+  config.installedVersion = version;
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf-8');
+}
+
+/** Marker in the redirect stub so we can detect it idempotently. */
+const AGENT_STUB_MARKER = '<!-- squad-plugin-redirect -->';
+
+const AGENT_STUB_CONTENT = `---
+name: Squad
+description: "Squad has moved to a Copilot plugin."
+---
+
+${AGENT_STUB_MARKER}
+
+Squad is now distributed as a Copilot plugin.
+
+**To get started:** Run \`copilot plugin install bradygaster/squad\` then start a new session.
+
+The Squad CLI (\`npx @bradygaster/squad-cli\`) continues to manage your team state in \`.squad/\`.
+`;
+
+function isAgentStub(filePath: string): boolean {
+  try {
+    if (!fs.existsSync(filePath)) return false;
+    return fs.readFileSync(filePath, 'utf8').includes(AGENT_STUB_MARKER);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Best-effort plugin install during upgrade.
+ * Mirrors tryInstallPlugin in init.ts.
+ */
+async function tryInstallPluginOnUpgrade(): Promise<boolean> {
+  try {
+    await execAsync('copilot plugin install bradygaster/squad', { timeout: 30_000 });
+    success('Copilot plugin installed');
+    return true;
+  } catch {
+    warn('Copilot plugin install skipped — install manually with: copilot plugin install bradygaster/squad');
+    return false;
+  }
+}
+
+/**
+ * Migrate the legacy .github/agents/squad.agent.md to a redirect stub.
+ * Idempotent — skips if already stubbed or file doesn't exist.
+ */
+async function migrateAgentFileToStub(dest: string, filesUpdated: string[]): Promise<void> {
+  const agentPath = path.join(dest, '.github', 'agents', 'squad.agent.md');
+  if (fs.existsSync(agentPath) && !isAgentStub(agentPath)) {
+    fs.writeFileSync(agentPath, AGENT_STUB_CONTENT, 'utf-8');
+    success('migrated squad.agent.md → plugin redirect stub');
+    filesUpdated.push('squad.agent.md (stub)');
+    
+    // Best-effort plugin install so the user has the real agent
+    if (!process.env['CI'] && !process.env['VITEST']) {
+      await tryInstallPluginOnUpgrade();
+    }
+  }
 }
 
 /**
@@ -323,7 +389,7 @@ export async function runUpgrade(dest: string, options: UpgradeOptions = {}): Pr
   }
   
   const agentDest = path.join(dest, '.github', 'agents', 'squad.agent.md');
-  const oldVersion = readInstalledVersion(agentDest);
+  const oldVersion = readInstalledVersion(squadDirInfo.path, agentDest);
   
   // Check if already current
   const isAlreadyCurrent = oldVersion && oldVersion !== '0.0.0' && compareSemver(oldVersion, cliVersion) === 0;
@@ -352,15 +418,11 @@ export async function runUpgrade(dest: string, options: UpgradeOptions = {}): Pr
       filesUpdated.push(`workflows (${wfFiles.length} files)`);
     }
     
-    // Refresh squad.agent.md
-    const agentSrc = path.join(templatesDir, 'squad.agent.md');
-    if (fs.existsSync(agentSrc)) {
-      fs.mkdirSync(path.dirname(agentDest), { recursive: true });
-      fs.copyFileSync(agentSrc, agentDest);
-      stampVersion(agentDest, cliVersion);
-      success('upgraded squad.agent.md');
-      filesUpdated.push('squad.agent.md');
-    }
+    // Migrate legacy agent file to stub (idempotent)
+    await migrateAgentFileToStub(dest, filesUpdated);
+    
+    // Write version to config.json
+    writeVersionToConfig(squadDirInfo.path, cliVersion);
     
     return {
       fromVersion: oldVersion,
@@ -370,25 +432,12 @@ export async function runUpgrade(dest: string, options: UpgradeOptions = {}): Pr
     };
   }
   
-  // Upgrade squad.agent.md
-  const templatesDir = getTemplatesDir();
-  const agentSrc = path.join(templatesDir, 'squad.agent.md');
-  
-  if (!fs.existsSync(agentSrc)) {
-    fatal('squad.agent.md not found in templates — installation may be corrupted');
-  }
-  
-  fs.mkdirSync(path.dirname(agentDest), { recursive: true });
-  fs.copyFileSync(agentSrc, agentDest);
-  stampVersion(agentDest, cliVersion);
-  
   const fromLabel = oldVersion === '0.0.0' || !oldVersion ? 'unknown' : oldVersion;
-  success(`upgraded coordinator from ${fromLabel} to ${cliVersion}`);
-  filesUpdated.push('squad.agent.md');
   
   // Upgrade squad-owned files from template manifest
-  // Exclude squad.agent.md — already copied and version-stamped above
-  const filesToUpgrade = TEMPLATE_MANIFEST.filter(f => f.overwriteOnUpgrade && f.source !== 'squad.agent.md');
+  // Agent prompt is now delivered via plugin, not local file
+  const templatesDir = getTemplatesDir();
+  const filesToUpgrade = TEMPLATE_MANIFEST.filter(f => f.overwriteOnUpgrade);
   
   for (const file of filesToUpgrade) {
     const srcPath = path.join(templatesDir, file.source);
@@ -424,6 +473,12 @@ export async function runUpgrade(dest: string, options: UpgradeOptions = {}): Pr
   
   // Run migrations
   const migrationsApplied = await runMigrations(squadDirInfo.path, oldVersion, cliVersion);
+  
+  // Migrate legacy agent file to stub (idempotent)
+  await migrateAgentFileToStub(dest, filesUpdated);
+  
+  // Write version to config.json
+  writeVersionToConfig(squadDirInfo.path, cliVersion);
   
   // Update copilot-instructions.md if @copilot is enabled
   const copilotInstructionsSrc = path.join(templatesDir, 'copilot-instructions.md');

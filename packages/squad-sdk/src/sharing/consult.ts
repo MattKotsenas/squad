@@ -435,14 +435,11 @@ export async function setupConsultMode(
     // Patch scribe-charter.md with consult mode extraction instructions
     patchScribeCharterForConsultMode(squadDir);
 
-    // Create .github/agents/squad.agent.md for `gh copilot --agent squad`
-    const agentDir = path.dirname(agentFile);
-    if (!fs.existsSync(agentDir)) {
-      fs.mkdirSync(agentDir, { recursive: true });
-    }
-    fs.writeFileSync(agentFile, getConsultAgentContent(projectName), 'utf-8');
+    // NOTE: .github/agents/squad.agent.md is no longer created here.
+    // The agent prompt is now distributed via the Copilot plugin, which
+    // detects consult mode from .squad/config.json { consult: true }.
 
-    // Add .squad/ and .github/agents/squad.agent.md to .git/info/exclude
+    // Add .squad/ to .git/info/exclude
     const excludeDir = path.dirname(gitExclude);
     if (!fs.existsSync(excludeDir)) {
       fs.mkdirSync(excludeDir, { recursive: true });
@@ -453,9 +450,6 @@ export async function setupConsultMode(
     const excludeLines: string[] = [];
     if (!excludeContent.includes('.squad/')) {
       excludeLines.push('.squad/');
-    }
-    if (!excludeContent.includes('.github/agents/squad.agent.md')) {
-      excludeLines.push('.github/agents/squad.agent.md');
     }
     if (excludeLines.length > 0) {
       fs.appendFileSync(gitExclude, '\n# Squad consult mode (local only)\n' + excludeLines.join('\n') + '\n');

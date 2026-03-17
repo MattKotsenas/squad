@@ -50,8 +50,8 @@ describe('squad init --sdk flag', () => {
     // Assert: .squad/agents/ exists
     expect(existsSync(join(tempDir, '.squad', 'agents'))).toBe(true);
 
-    // Assert: .github/agents/squad.agent.md exists
-    expect(existsSync(join(tempDir, '.github', 'agents', 'squad.agent.md'))).toBe(true);
+    // Assert: .github/agents/squad.agent.md is NOT created (agent prompt delivered via plugin)
+    expect(existsSync(join(tempDir, '.github', 'agents', 'squad.agent.md'))).toBe(false);
   });
 
   it('init --sdk creates squad.config.ts with defineSquad() syntax', async () => {

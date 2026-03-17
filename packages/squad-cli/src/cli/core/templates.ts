@@ -27,13 +27,9 @@ export interface TemplateFile {
  * - User-owned (overwriteOnUpgrade: false): team.md, routing.md, decisions.md, ceremonies.md, agent history/identity
  */
 export const TEMPLATE_MANIFEST: TemplateFile[] = [
-  // Core coordinator
-  {
-    source: 'squad.agent.md',
-    destination: '../.github/agents/squad.agent.md',
-    overwriteOnUpgrade: true,
-    description: 'Squad coordinator agent prompt',
-  },
+  // NOTE: squad.agent.md is no longer in this manifest.
+  // The agent prompt is now distributed via the Copilot plugin (.github/plugin/).
+  // Upgrade replaces any existing local agent file with a redirect stub.
   
   // Casting system (squad-owned, overwrite on upgrade)
   {

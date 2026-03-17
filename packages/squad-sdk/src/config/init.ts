@@ -127,7 +127,7 @@ export interface InitResult {
   configPath: string;
   /** Agent directory paths */
   agentDirs: string[];
-  /** Path to squad.agent.md */
+  /** Path to squad.agent.md (empty — agent prompt is now delivered via plugin) */
   agentFile: string;
   /** Path to .squad/ directory */
   squadDir: string;
@@ -609,6 +609,7 @@ export async function initSquad(options: InitOptions): Promise<InitResult> {
     }
     const squadConfig: Record<string, unknown> = {
       version: 1,
+      installedVersion: version,
       teamRoot: teamRoot,
     };
     if (detectedPlatform) {
@@ -861,21 +862,10 @@ ${projectDescription ? `- **Description:** ${projectDescription}\n` : ''}- **Cre
   }
   
   // -------------------------------------------------------------------------
-  // Create .github/agents/squad.agent.md
+  // NOTE: .github/agents/squad.agent.md is no longer created here.
+  // The agent prompt is now distributed via the Copilot plugin.
+  // See: .github/plugin/agents/squad.md
   // -------------------------------------------------------------------------
-  
-  const agentFile = join(teamRoot, '.github', 'agents', 'squad.agent.md');
-  if (!existsSync(agentFile) || !skipExisting) {
-    if (templatesDir && existsSync(join(templatesDir, 'squad.agent.md'))) {
-      let agentContent = readFileSync(join(templatesDir, 'squad.agent.md'), 'utf-8');
-      agentContent = stampVersionInContent(agentContent, version);
-      await mkdir(dirname(agentFile), { recursive: true });
-      await writeFile(agentFile, agentContent, 'utf-8');
-      createdFiles.push(toRelativePath(agentFile));
-    }
-  } else {
-    skippedFiles.push(toRelativePath(agentFile));
-  }
   
   // -------------------------------------------------------------------------
   // Copy .squad/templates/ (optional)
@@ -1027,7 +1017,7 @@ ${projectDescription ? `- **Description:** ${projectDescription}\n` : ''}- **Cre
     skippedFiles,
     configPath,
     agentDirs,
-    agentFile,
+    agentFile: '', // Agent prompt is now delivered via Copilot plugin
     squadDir,
   };
 }

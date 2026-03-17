@@ -472,46 +472,37 @@ describe('setupConsultMode', () => {
     expect(excludeContent).toContain('.squad/');
   });
 
-  it('creates .github/agents/squad.agent.md', async () => {
-    const result = await setupConsultMode({
+  it('does not create .github/agents/squad.agent.md (plugin delivers agent prompt)', async () => {
+    await setupConsultMode({
       projectRoot: PROJECT_ROOT,
       personalSquadRoot: PERSONAL_SQUAD,
     });
 
-    expect(result.agentFile).toBe(join(PROJECT_ROOT, '.github', 'agents', 'squad.agent.md'));
-    expect(existsSync(result.agentFile)).toBe(true);
-
-    const content = readFileSync(result.agentFile, 'utf-8');
-    expect(content).toContain('name: Squad');
-    expect(content).toContain('consult-mode: true');
-    // Agent file should reference local .squad/ (the copy), not absolute paths
-    expect(content).toContain('.squad/decisions.md');
-    expect(content).toContain('.squad/agents/');
+    // Agent file is no longer created — plugin handles the agent prompt.
+    // Consult mode is detected from .squad/config.json { consult: true }.
+    expect(existsSync(join(PROJECT_ROOT, '.github', 'agents', 'squad.agent.md'))).toBe(false);
   });
 
-  it('uses full squad.agent.md template with consult mode preamble', async () => {
-    const result = await setupConsultMode({
+  it('sets consult flag in .squad/config.json', async () => {
+    await setupConsultMode({
       projectRoot: PROJECT_ROOT,
       personalSquadRoot: PERSONAL_SQUAD,
     });
 
-    const content = readFileSync(result.agentFile, 'utf-8');
-    // Should have consult mode preamble
-    expect(content).toContain('Consult Mode Active');
-    expect(content).toContain('Skip Init Mode');
-    // Should have full template content (Coordinator Identity section)
-    expect(content).toContain('Coordinator Identity');
-    expect(content).toContain('Team Mode');
+    const configPath = join(PROJECT_ROOT, '.squad', 'config.json');
+    expect(existsSync(configPath)).toBe(true);
+    const config = JSON.parse(readFileSync(configPath, 'utf-8'));
+    expect(config.consult).toBe(true);
   });
 
-  it('adds .github/agents/squad.agent.md to git exclude', async () => {
+  it('adds .squad/ to git exclude', async () => {
     const result = await setupConsultMode({
       projectRoot: PROJECT_ROOT,
       personalSquadRoot: PERSONAL_SQUAD,
     });
 
     const excludeContent = readFileSync(result.gitExclude, 'utf-8');
-    expect(excludeContent).toContain('.github/agents/squad.agent.md');
+    expect(excludeContent).toContain('.squad/');
   });
 
   it('throws if not a git repository', async () => {
