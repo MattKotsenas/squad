@@ -1,22 +1,22 @@
 ---
 name: "init-mode"
-description: "Team initialization flow (Phase 1 proposal + Phase 2 creation)"
+description: "Team initialization flow (Phase 2 proposal + Phase 3 creation)"
 domain: "orchestration"
 confidence: "high"
 source: "extracted"
 tools:
   - name: "ask_user"
     description: "Confirm team roster with selectable menu"
-    when: "Phase 1 proposal — requires explicit user confirmation"
+    when: "Phase 2 proposal — requires explicit user confirmation"
 ---
 
 ## Context
 
-Init Mode activates when `.squad/team.md` does not exist, or exists but has zero roster entries under `## Members`. The coordinator proposes a team (Phase 1), waits for user confirmation, then creates the team structure (Phase 2).
+Init Mode activates when `.squad/team.md` does not exist, or exists but has zero roster entries under `## Members`. Phase 1 (scaffold and mode selection) is handled by the coordinator. This skill covers Phase 2 (propose team) and Phase 3 (create team structure).
 
 ## Patterns
 
-### Phase 1: Propose the Team
+### Propose the Team (Phase 2)
 
 No team exists yet. Propose one — but **DO NOT create any files until the user confirms.**
 
@@ -44,13 +44,13 @@ No team exists yet. Propose one — but **DO NOT create any files until the user
    - **question:** *"Look right?"*
    - **choices:** `["Yes, hire this team", "Add someone", "Change a role"]`
 
-**⚠️ STOP. Your response ENDS here. Do NOT proceed to Phase 2. Do NOT create any files or directories. Wait for the user's reply.**
+**⚠️ STOP. Your response ENDS here. Do NOT proceed to Phase 3. Do NOT create any files or directories. Wait for the user's reply.**
 
-### Phase 2: Create the Team
+### Create the Team (Phase 3)
 
-**Trigger:** The user replied to Phase 1 with confirmation ("yes", "looks good", or similar affirmative), OR the user's reply to Phase 1 is a task (treat as implicit "yes").
+**Trigger:** The user replied to Phase 2 with confirmation ("yes", "looks good", or similar affirmative), OR the user's reply to Phase 2 is a task (treat as implicit "yes").
 
-> If the user said "add someone" or "change a role," go back to Phase 1 step 3 and re-propose. Do NOT enter Phase 2 until the user confirms.
+> If the user said "add someone" or "change a role," go back to Phase 2 step 3 and re-propose. Do NOT enter Phase 3 until the user confirms.
 
 6. Create the `.squad/` directory structure (see `.squad/templates/` for format guides or use the standard structure: team.md, routing.md, ceremonies.md, decisions.md, decisions/inbox/, casting/, agents/, orchestration-log/, skills/, log/).
 
@@ -93,10 +93,10 @@ The `union` merge driver keeps all lines from both sides, which is correct for a
 
 ## Anti-Patterns
 
-- ❌ Creating files before user confirms Phase 1
+- ❌ Creating files before user confirms Phase 2
 - ❌ Mixing agents from different universes in the same cast
 - ❌ Skipping the `ask_user` tool and assuming confirmation
-- ❌ Proceeding to Phase 2 when user said "add someone" or "change a role"
+- ❌ Proceeding to Phase 3 when user said "add someone" or "change a role"
 - ❌ Using `## Team Roster` instead of `## Members` as the header (breaks GitHub workflows)
 - ❌ Forgetting to initialize `.squad/casting/` state files
 - ❌ Reading or storing `git config user.email` (PII violation)

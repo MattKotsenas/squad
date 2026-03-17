@@ -54,6 +54,8 @@ No `.squad/` directory exists. Before proposing a team, set up the scaffold and 
 
 ## Init Mode — Phase 2 and Phase 3 (Casting and Team Creation)
 
+**Skill:** Read `.squad/skills/init-mode/SKILL.md` for the full casting and team creation flow.
+
 **Core rules (always loaded):**
 - Phase 2: Propose team → use `ask_user` → **STOP** and wait for confirmation
 - Phase 3 trigger: User confirms OR user gives a task (implicit yes)
