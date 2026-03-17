@@ -50,13 +50,13 @@ npx github:bradygaster/squad
 ```
 
 ```
-✅ .github/agents/squad.agent.md (v0.2.0)
+✅ .squad/ (team state initialized)
 ✅ .ai-team-templates/
-✅ .ai-team/skills/ (starter skills)
-✅ .ai-team/ceremonies.md
 ✅ .gitattributes (merge=union rules)
 
 Squad is ready.
+
+Next: Install the Squad plugin with `copilot plugin install bradygaster/squad`
 ```
 
 ---

@@ -12,16 +12,18 @@ From your repo root:
 npx github:bradygaster/squad upgrade
 ```
 
-Squad detects your installed version, updates Squad-owned files, and runs any needed migrations:
+Squad detects the installed version (from `.squad/config.json`'s `installedVersion` field), updates Squad-owned files, and runs any needed migrations:
 
 ```
-✅ upgraded coordinator from 0.1.0 to 0.2.0
 ✅ upgraded .ai-team-templates/
+✅ updated .squad/config.json (installedVersion: 0.2.0)
 
-.ai-team/ untouched — your team state is safe
+.squad/ team state untouched — your team state is safe
 
 Squad is upgraded. (v0.2.0)
 ```
+
+> **Note:** The Squad agent prompt is delivered via the Copilot plugin (`copilot plugin install bradygaster/squad`), not as a repo-local file. To update the agent prompt, update the plugin: `copilot plugin update bradygaster/squad`.
 
 That's it.
 
@@ -29,17 +31,18 @@ That's it.
 
 ## What Gets Upgraded
 
-| File | Updated? | Notes |
-|------|----------|-------|
-| `.github/agents/squad.agent.md` | ✅ Yes | Overwritten with latest coordinator logic |
+| Component | Updated? | Notes |
+|-----------|----------|-------|
+| Squad agent prompt (Copilot plugin) | ✅ Via plugin update | Run `copilot plugin update bradygaster/squad` |
 | `.ai-team-templates/` | ✅ Yes | Overwritten with latest templates |
 | `.github/workflows/squad-*.yml` | ✅ Yes | Overwritten with latest squad workflows |
 | `.github/copilot-instructions.md` | ⚡ Conditional | Updated only if @copilot is enabled on the team |
-| `.ai-team/` | ❌ Never | Your team's knowledge, decisions, casting state, skills |
+| `.squad/config.json` | ✅ `installedVersion` | Version stamp updated |
+| `.squad/` (team state) | ❌ Never | Your team's knowledge, decisions, casting state, skills |
 
-Squad-owned files (`squad.agent.md` and `.ai-team-templates/`) are replaced entirely. Don't put custom changes in them — they'll be lost on upgrade.
+Squad-owned template files (`.ai-team-templates/`) are replaced entirely. Don't put custom changes in them — they'll be lost on upgrade. The agent prompt itself is delivered via the Copilot plugin and is updated separately.
 
-Your team state in `.ai-team/` is never touched. Agent charters, histories, decisions, casting state, skills, and session logs are all safe.
+Your team state in `.squad/` is never touched. Agent charters, histories, decisions, casting state, skills, and session logs are all safe.
 
 ---
 
@@ -89,27 +92,9 @@ git commit -m "chore: migrate .ai-team/ → .squad/"
 
 ## Version Stamping
 
-`squad.agent.md` is version-stamped on install and upgrade. The version appears in two places:
+The installed version is tracked in `.squad/config.json` (the `installedVersion` field) and can be checked from the command line:
 
-### 1. Agent Name (Visible in UI)
-
-The version is displayed in the agent picker across all Copilot hosts (VS Code, CLI, Visual Studio):
-
-```yaml
-name: Squad (vX.Y.Z)
-```
-
-When you select agents in Copilot, you'll see **"Squad (vX.Y.Z)"** in the dropdown — making it immediately clear which version you're running.
-
-### 2. Version Field (For Reference)
-
-The frontmatter also includes a standalone version field:
-
-```yaml
-version: "X.Y.Z"
-```
-
-### 3. CLI Check
+### CLI Check
 
 You can also check your installed version from the command line:
 
@@ -140,16 +125,16 @@ Squad still runs any missing migrations in case a prior upgrade was interrupted.
 ## 2. Commit the Upgrade
 
 ```bash
-git add .github/agents/squad.agent.md .ai-team-templates/
+git add .ai-team-templates/ .squad/config.json
 git commit -m "Upgrade Squad to v0.2.0"
 ```
 
-No changes to `.ai-team/` — the diff is limited to Squad-owned files.
+No changes to `.squad/` team state — the diff is limited to Squad-owned files and the version stamp.
 
 ---
 
 ## Tips
 
 - **Upgrade is safe.** It only overwrites files that Squad owns. Your team state is never modified.
-- **Don't customize `squad.agent.md`.** Any changes you make will be overwritten on the next upgrade. If you need custom behavior, use directives in `decisions.md` instead.
+- **Agent prompt updates come via the plugin.** Run `copilot plugin update bradygaster/squad` to get the latest agent prompt. If you need custom behavior, use directives in `decisions.md` instead.
 - **Re-running upgrade is harmless.** If you're not sure whether an upgrade completed, run it again. It's idempotent.

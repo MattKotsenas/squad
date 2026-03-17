@@ -16,14 +16,14 @@ You don't always have the repo cloned locally. Sometimes you want to ask your Sq
 
 Squad already supports several remote interaction paths. Each trades off convenience, depth, and setup effort.
 
-### 1. Copilot Chat with squad.agent.md
+### 1. Copilot Chat with Squad plugin
 
-If the repo has `.github/agents/squad.agent.md`, GitHub Copilot Chat reads it automatically when you ask questions about the repo.
+If you have the Squad Copilot plugin installed (`copilot plugin install bradygaster/squad`), Copilot Chat uses it automatically when you ask questions about the repo.
 
 **How it works:**
-- Open the repo in GitHub.com
-- Use Copilot Chat in the browser
-- Copilot reads the agent file and answers using your team's context
+- Open the repo in GitHub.com or your editor
+- Use Copilot Chat
+- Copilot uses the Squad plugin and your team's context from `.squad/` to answer
 
 **Good for:** Quick questions about architecture, team structure, and project conventions.
 
@@ -79,7 +79,7 @@ A `/squad ask "question"` command in issue comments that triggers Squad to respo
 
 ## Tips
 
-- **Start with Copilot Chat.** It's the lowest-effort path and works today for repos with `squad.agent.md`.
+- **Start with Copilot Chat.** It's the lowest-effort path and works today when the Squad plugin is installed.
 - **Use issues for anything that needs code.** Copilot Chat answers questions; issues drive work.
 - **Include context in your question.** Remote paths don't have your local state. Be specific about which files, features, or branches you mean.
 - **Check the default branch.** All remote paths currently read `main` (or whatever the repo's default branch is). If you're asking about unreleased work, mention the branch explicitly.

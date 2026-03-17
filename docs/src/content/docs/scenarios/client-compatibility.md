@@ -11,7 +11,7 @@ Squad runs on multiple Copilot surfaces — each with its own agent spawning mec
 | **Per-spawn model selection** | ✅ Dynamic (4-layer hierarchy) | ⚠️ Static (custom agent frontmatter) | ? | ? |
 | **Background/async execution** | ✅ `mode: "background"` (fire-and-forget) | ⚠️ Sync only (parallel concurrent) | ? | ? |
 | **Parallel fan-out** | ✅ Background tasks + `read_agent` | ✅ Multiple subagents in one turn | ? | ? |
-| **File discovery (.github/agents/)** | ✅ Automatic | ✅ Automatic | ? | ? |
+| **Plugin discovery** | ✅ Automatic | ✅ Automatic | ? | ? |
 | **`.ai-team/` file access (read)** | ✅ Full | ✅ Full (workspace-scoped) | ? | ? |
 | **`.ai-team/` file access (write)** | ✅ Full | ✅ Full (with approval prompt) | ? | ? |
 | **SQL tool** | ✅ Available | ❌ Not available | ❌ Not available | ❌ Not available |
@@ -64,10 +64,10 @@ Squad's **primary platform**. All features are fully supported.
   3. Poll each agent's results via `read_agent` with `wait: true, timeout: 300`
   4. Assemble and present results
 
-### File Discovery & Access
+### Plugin Discovery & File Access
 
-- **Auto-discovery:** `.github/agents/squad.agent.md` is discovered automatically
-- **`.ai-team/` access:** Unrestricted (full filesystem)
+- **Auto-discovery:** The Squad Copilot plugin (`copilot plugin install bradygaster/squad`) is discovered automatically
+- **`.squad/` access:** Unrestricted (full filesystem)
 - **Parallel reads:** Multiple file operations in one turn supported
 - **Parallel writes:** Multiple file creates/edits in one turn supported
 
@@ -88,7 +88,7 @@ Squad runs on VS Code with **conditional support**. Key differences from CLI:
 
 - **Tools:** `runSubagent` (anonymous) or `agent` (named custom agent)
 - **Behavior:** Sub-agents are **always synchronous** (blocking) individually, but **multiple subagents run in parallel** when spawned in the same turn
-- **Custom agents:** Auto-discovered from `.github/agents/*.agent.md` (same location as CLI)
+- **Custom agents:** Auto-discovered via installed Copilot plugins
 - **Default behavior:** Subagents inherit parent model and tools
 
 ### Model Selection
@@ -119,7 +119,7 @@ Squad runs on VS Code with **conditional support**. Key differences from CLI:
 
 ### File Discovery & Access
 
-- **Auto-discovery:** `.github/agents/squad.agent.md` auto-discovered from workspace on load (file watchers enabled — no restart needed on changes)
+- **Auto-discovery:** The Squad Copilot plugin is auto-discovered on load
 - **Scope:** Workspace-scoped (cannot access outside workspace directory)
 - **`.ai-team/` read:** ✅ Full access via `readFile` tool
 - **`.ai-team/` write:** ✅ Full access via `createFile` / `editFiles` tools

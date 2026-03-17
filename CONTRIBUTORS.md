@@ -32,13 +32,13 @@ That's it. You're now on insider builds.
 - **Regular updates** — The insider branch receives commits as features ship
 - **Experimental features** — Some features may not be fully stable
 - **Bug reports welcome** — Help us find and fix issues early
-- **Version format** — `v0.4.2-insider+{commit-hash}` in your `squad.agent.md`
+- **Version format** — `v0.4.2-insider+{commit-hash}` in your `.squad/config.json` (`installedVersion` field)
 
 ### Report Issues
 
 Found a bug in an insider build? Please [open a GitHub issue](https://github.com/bradygaster/squad/issues) with:
 
-- **Version** — The full version string from your `squad.agent.md`
+- **Version** — The full version string from your `.squad/config.json` (`installedVersion` field)
 - **What happened** — Clear description of the bug or unexpected behavior
 - **Steps to reproduce** — How to trigger the issue
 - **Environment** — CLI or VS Code, Node version, OS

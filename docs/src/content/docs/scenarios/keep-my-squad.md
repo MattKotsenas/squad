@@ -144,19 +144,21 @@ npx github:bradygaster/squad@latest
 ```
 🔄 Upgrading Squad from v0.1.5 to v0.2.0
 
-✅ .github/agents/squad.agent.md (updated to v0.2.0)
 ✅ .ai-team-templates/ (new workflow templates)
+✅ .squad/config.json (installedVersion: 0.2.0)
 ✅ .gitattributes (merge=union rules verified)
 
-⚠️  Your .ai-team/ directory was NOT modified.
+⚠️  Your .squad/ team state was NOT modified.
    Your team's memory, skills, and decisions are untouched.
 ```
 
 Upgrades only change:
 
-- The Squad agent definition (`.github/agents/squad.agent.md`)
 - Workflow templates (`.ai-team-templates/`)
+- The version stamp in `.squad/config.json`
 - The installer itself
+
+The Squad agent prompt is delivered via the Copilot plugin (`copilot plugin install bradygaster/squad`) and is updated separately with `copilot plugin update bradygaster/squad`.
 
 Your **team's knowledge is safe**.
 

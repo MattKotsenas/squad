@@ -54,7 +54,7 @@ The big rewrite. Everything moved to TypeScript with a clean SDK + CLI split.
 
 | Change | Migration |
 |--------|-----------|
-| Config file: `squad.agent.md` → `squad.config.ts` | Run `squad init` to generate typed config |
+| Agent prompt: repo-local file → Copilot plugin | Install via `copilot plugin install bradygaster/squad` |
 | Team dir: `.squad/` | Standard directory for all team state |
 | Routing: markdown rules → typed `RoutingRule[]` | Export existing rules with `squad export` |
 | Models: string names → tier-based `ModelConfig` | Use `defaultTier` + `fallbackChains` in config |

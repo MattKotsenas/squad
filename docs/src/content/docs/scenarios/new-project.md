@@ -30,19 +30,18 @@ npx github:bradygaster/squad
 ```
 
 ```
-✅ .github/agents/squad.agent.md (v0.2.0)
+✅ .squad/ (team state initialized)
 ✅ .github/workflows/ (10 workflows)
 ✅ .ai-team-templates/
-✅ .ai-team/skills/ (starter skills)
-✅ .ai-team/ceremonies.md
 ✅ .gitattributes (merge=union rules)
 
 Squad is ready.
 
 Next steps:
-  1. Open Copilot:  copilot
-  2. Select Squad from the /agent list (CLI) or /agents (VS Code)
-  3. Tell it what you're building
+  1. Install the Squad plugin:  copilot plugin install bradygaster/squad
+  2. Open Copilot:  copilot
+  3. Select Squad from the /agent list (CLI) or /agents (VS Code)
+  4. Tell it what you're building
 ```
 
 ---

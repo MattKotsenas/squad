@@ -22,7 +22,7 @@ squad
 ```
 
 ```
-✅ .github/agents/squad.agent.md (v0.2.0)
+✅ .squad/ (team state initialized)
 ✅ .github/workflows/ (10 workflows)
 ✅ .squad/templates/
 ✅ .squad/skills/ (starter skills)
@@ -32,9 +32,10 @@ squad
 Squad is ready.
 
 Next steps:
-  1. Open Copilot:  copilot
-  2. Select Squad from the /agent list (CLI) or /agents (VS Code)
-  3. Tell it what you're building
+  1. Install the Squad plugin:  copilot plugin install bradygaster/squad
+  2. Open Copilot:  copilot
+  3. Select Squad from the /agent list (CLI) or /agents (VS Code)
+  4. Tell it what you're building
 ```
 
 If you already have a `.gitattributes` file, Squad appends `merge=union` rules for append-only team state files. Your existing rules are untouched.

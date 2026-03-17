@@ -2,7 +2,7 @@
 
 **Try this to recover from data loss:**
 ```
-My .ai-team/ directory was deleted — help me recover the team state
+My .squad/ directory was deleted — help me recover the team state
 ```
 
 **Try this to revert bad code:**
@@ -15,7 +15,7 @@ An agent wrote bad code — how do I revert it?
 The squad is confused — reset their context
 ```
 
-Recovery procedures for deleted `.ai-team/`, bad agent code, confused squads, and upgrade issues. Most problems are fixable with Git or re-init.
+Recovery procedures for deleted `.squad/`, bad agent code, confused squads, and upgrade issues. Most problems are fixable with Git or re-init.
 
 ---
 
@@ -165,16 +165,16 @@ You're back to day one. Clean slate.
 **Solution:** Squad upgrades **never touch** `.ai-team/`. The issue is likely in:
 
 1. **Workflow templates** — check `.ai-team-templates/`
-2. **Squad agent definition** — check `.github/agents/squad.agent.md`
+2. **Squad plugin** — check `copilot plugin list` for the installed plugin version
 3. **Model configuration** — check `.ai-team/model-config.json`
 
-Roll back the Squad agent definition:
+Roll back the plugin to a previous version:
 
 ```bash
-git checkout HEAD^ .github/agents/squad.agent.md
+copilot plugin install bradygaster/squad@0.1.5
 ```
 
-Or reinstall the previous version:
+Or reinstall the previous CLI version:
 
 ```bash
 npx github:bradygaster/squad@0.1.5

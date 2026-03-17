@@ -26,7 +26,7 @@ Colors are defined as constants at the top of `index.js`: `GREEN`, `RED`, `DIM`,
 ### File Structure
 - `.squad/` — Team state (user-owned, never overwritten by upgrades)
 - `.squad/templates/` — Template files copied from `templates/` (Squad-owned, overwritten on upgrade)
-- `.github/agents/squad.agent.md` — Coordinator prompt (Squad-owned, overwritten on upgrade)
+- Coordinator prompt — Delivered via Copilot plugin (not a repo-local file)
 - `templates/` — Source templates shipped with the npm package
 - `.squad/skills/` — Team skills in SKILL.md format (user-owned)
 - `.squad/decisions/inbox/` — Drop-box for parallel decision writes
@@ -50,7 +50,7 @@ function fatal(msg) {
 }
 
 // File path construction (Windows-safe)
-const agentDest = path.join(dest, '.github', 'agents', 'squad.agent.md');
+const configDest = path.join(dest, '.squad', 'config.json');
 
 // Skip-if-exists pattern
 if (!fs.existsSync(ceremoniesDest)) {

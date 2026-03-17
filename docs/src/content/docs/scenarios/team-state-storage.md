@@ -57,6 +57,7 @@ git commit -m "Gitignore squad team state"
 - **Collaborators don't share state.** Your teammate clones the repo and gets a fresh, empty `.ai-team/`. Their team doesn't match yours.
 - **No git history for recovery.** You can't `git log` to find an old decision or see when a skill was added.
 - **⚠️ GitHub Actions workflows can't access `.ai-team/`.** Actions only see committed files. Triage routing rules in `team.md` won't work in CI/CD. (Label sync and other API-based workflows still function, but the team-based routing logic is silent.)
+> **Note:** The Squad agent prompt is now delivered via the Copilot plugin (`copilot plugin install bradygaster/squad`), not as a repo-local file. The `.squad/` directory contains only team state.
 
 ### When to Use This
 

@@ -93,15 +93,15 @@ If below v20, upgrade to the latest LTS:
 
 **Problem:** After install, `squad` doesn't show up in the `/agent` (CLI) or `/agents` (VS Code) list in GitHub Copilot.
 
-**Cause:** The `.github/agents/squad.agent.md` file may not have been created, or Copilot hasn't refreshed its agent list.
+**Cause:** The Squad Copilot plugin may not be installed, or Copilot hasn't refreshed its agent list.
 
 **Fix:**
 
-1. Verify the file exists:
+1. Verify the plugin is installed:
    ```bash
-   ls .github/agents/squad.agent.md
+   copilot plugin list
    ```
-   If missing, re-run `npx github:bradygaster/squad`.
+   If missing, install it: `copilot plugin install bradygaster/squad`.
 
 2. Restart your Copilot session — close and reopen the terminal or editor.
 
@@ -115,7 +115,7 @@ If below v20, upgrade to the latest LTS:
 
 **Fix:**
 
-1. Check current version in `.github/agents/squad.agent.md` (frontmatter `version:` field).
+1. Check current version in `.squad/config.json` (`installedVersion` field).
 
 2. Clear npm cache and retry:
    ```bash

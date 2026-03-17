@@ -76,7 +76,7 @@ squad consult --check      # Dry-run: show what would happen without creating fi
 **What happens:**
 
 1. Copies your personal squad into the project's `.squad/` directory
-2. Adds `.squad/` and `.github/agents/squad.agent.md` to `.git/info/exclude`
+2. Adds `.squad/` to `.git/info/exclude`
 3. Patches the Scribe charter with extraction instructions
 4. Creates a staging area at `.squad/extract/` for generic learnings
 
@@ -92,9 +92,9 @@ squad consult --check      # Dry-run: show what would happen without creating fi
 ├── sessions/               # Local session history
 └── extract/                # Staging area for generic learnings
 
-.github/agents/
-└── squad.agent.md          # Points to local .squad/ (also excluded from git)
 ```
+
+> **Note:** The Squad agent prompt is delivered via the Copilot plugin (`copilot plugin install bradygaster/squad`), not as a repo-local file. Consult mode detects its configuration from `.squad/config.json`.
 
 **Requirements:**
 
