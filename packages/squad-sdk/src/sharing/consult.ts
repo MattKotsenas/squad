@@ -206,8 +206,6 @@ export interface SetupConsultModeResult {
   projectName: string;
   /** Whether this was a dry run */
   dryRun: boolean;
-  /** Path to agent file (empty - agent prompt delivered via plugin) */
-  agentFile: string;
   /** List of created file paths (relative to squadDir) */
   createdFiles: string[];
   /** Whether extraction is disabled for this consult session */
@@ -260,7 +258,6 @@ export async function setupConsultMode(
 
   const squadDir = path.resolve(projectRoot, '.squad');
   const projectName = options.projectName || path.basename(projectRoot);
-  const agentFile = ''; // Agent prompt delivered via plugin
 
   // Check if we're in a git repository (handle worktrees/submodules where .git is a file)
   const gitPath = path.resolve(projectRoot, '.git');
@@ -372,7 +369,6 @@ export async function setupConsultMode(
     gitExclude,
     projectName,
     dryRun,
-    agentFile,
     createdFiles,
     extractionDisabled,
   };

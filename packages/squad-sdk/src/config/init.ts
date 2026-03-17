@@ -127,8 +127,6 @@ export interface InitResult {
   configPath: string;
   /** Agent directory paths */
   agentDirs: string[];
-  /** Path to squad.agent.md (empty — agent prompt is now delivered via plugin) */
-  agentFile: string;
   /** Path to .squad/ directory */
   squadDir: string;
 }
@@ -1017,7 +1015,6 @@ ${projectDescription ? `- **Description:** ${projectDescription}\n` : ''}- **Cre
     skippedFiles,
     configPath,
     agentDirs,
-    agentFile: '', // Agent prompt is now delivered via Copilot plugin
     squadDir,
   };
 }
