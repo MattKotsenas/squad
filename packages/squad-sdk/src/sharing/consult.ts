@@ -17,7 +17,6 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
 import type { AgentHistory, HistoryEntry } from './history-split.js';
 import { resolveGlobalSquadPath } from '../resolution.js';
@@ -56,53 +55,10 @@ export class ExtractionDisabledError extends Error {
 }
 
 // ============================================================================
-// Consult Mode Agent File
+// NOTE: Consult mode agent file creation was removed.
+// The agent prompt is now delivered via the Copilot plugin, which detects
+// consult mode from .squad/config.json { consult: true }.
 // ============================================================================
-
-/**
- * Consult mode preamble to inject after frontmatter in squad.agent.md.
- * This tells Squad it's in consult mode and should skip Init Mode.
- */
-const CONSULT_MODE_PREAMBLE = `
-<!-- consult-mode: true -->
-
-## ⚡ Consult Mode Active
-
-This project is in **consult mode**. Your personal squad has been copied into \`.squad/\` for this session.
-
-**Key differences from normal mode:**
-- **Skip Init Mode** — The team already exists (copied from your personal squad)
-- **Isolated changes** — All changes stay local until you run \`squad extract\`
-- **Invisible to project** — Both \`.squad/\` and this agent file are in \`.git/info/exclude\`
-
-**When done:** Run \`squad extract\` to review learnings and merge generic ones back to your personal squad.
-
----
-
-`;
-
-/**
- * Get the full squad.agent.md template path.
- * Looks in the SDK package's templates directory.
- */
-function getSquadAgentTemplatePath(): string | null {
-  // Use fileURLToPath for cross-platform compatibility (handles Windows drive letters, URL encoding)
-  const currentDir = path.dirname(fileURLToPath(import.meta.url));
-  
-  // Try relative to this file (in dist/)
-  const distPath = path.resolve(currentDir, '../../templates/squad.agent.md');
-  if (fs.existsSync(distPath)) {
-    return distPath;
-  }
-  
-  // Try relative to package root
-  const pkgPath = path.resolve(currentDir, '../../../templates/squad.agent.md');
-  if (fs.existsSync(pkgPath)) {
-    return pkgPath;
-  }
-  
-  return null;
-}
 
 /**
  * Get the git remote URL for a repository.
@@ -132,57 +88,7 @@ function getGitRemoteUrl(projectRoot: string): string | undefined {
   }
 }
 
-/**
- * Generate squad.agent.md for consult mode.
- * Uses the full template with consult mode preamble injected.
- */
-function getConsultAgentContent(projectName: string): string {
-  const templatePath = getSquadAgentTemplatePath();
-  
-  if (templatePath && fs.existsSync(templatePath)) {
-    const template = fs.readFileSync(templatePath, 'utf-8');
-    
-    // Find the end of frontmatter (second ---)
-    const frontmatterEnd = template.indexOf('---', template.indexOf('---') + 3);
-    if (frontmatterEnd !== -1) {
-      const insertPoint = frontmatterEnd + 3;
-      const before = template.slice(0, insertPoint);
-      const after = template.slice(insertPoint);
-      
-      // Update description in frontmatter for consult mode
-      const updatedBefore = before.replace(
-        /description:\s*"[^"]*"/,
-        `description: "Your AI team. Consulting on ${projectName} using your personal squad."`
-      );
-      
-      return updatedBefore + '\n' + CONSULT_MODE_PREAMBLE + after;
-    }
-    
-    // Fallback: prepend preamble
-    return template + '\n' + CONSULT_MODE_PREAMBLE;
-  }
-  
-  // Fallback: minimal agent if template not found
-  return `---
-name: Squad
-description: "Your AI team. Consulting on ${projectName} using your personal squad."
----
-
-${CONSULT_MODE_PREAMBLE}
-
-You are **Squad (Consultant)** — working on **${projectName}** using a copy of your personal squad.
-
-### Available Context (local copy in .squad/)
-
-- **Team:** \`.squad/team.md\` for roster and roles
-- **Routing:** \`.squad/routing.md\` for task routing rules  
-- **Decisions:** \`.squad/decisions.md\` for your established patterns
-- **Skills:** \`.squad/skills/\` for reusable capabilities
-- **Agents:** \`.squad/agents/\` for your squad agents
-
-Work as you would with your personal squad, but in this external codebase.
-`;
-}
+// getConsultAgentContent removed — agent prompt delivered via plugin
 
 // ============================================================================
 // Scribe Charter Patching for Consult Mode
