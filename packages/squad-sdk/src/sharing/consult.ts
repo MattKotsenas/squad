@@ -206,7 +206,7 @@ export interface SetupConsultModeResult {
   projectName: string;
   /** Whether this was a dry run */
   dryRun: boolean;
-  /** Path to created agent file (.github/agents/squad.agent.md) */
+  /** Path to agent file (empty - agent prompt delivered via plugin) */
   agentFile: string;
   /** List of created file paths (relative to squadDir) */
   createdFiles: string[];
@@ -243,8 +243,9 @@ export function resolveGitExcludePath(cwd: string): string {
  * Set up consult mode in a project.
  *
  * Creates .squad/ with consult: true, pointing to your personal squad.
- * Creates .github/agents/squad.agent.md for `gh copilot --agent squad` support.
- * Both are hidden via .git/info/exclude (never committed).
+ * Hidden via .git/info/exclude (never committed).
+ * The agent prompt is delivered via the Copilot plugin, which detects
+ * consult mode from .squad/config.json { consult: true }.
  *
  * @param options - Setup options
  * @returns Setup result with paths and metadata
@@ -259,7 +260,7 @@ export async function setupConsultMode(
 
   const squadDir = path.resolve(projectRoot, '.squad');
   const projectName = options.projectName || path.basename(projectRoot);
-  const agentFile = path.resolve(projectRoot, '.github', 'agents', 'squad.agent.md');
+  const agentFile = ''; // Agent prompt delivered via plugin
 
   // Check if we're in a git repository (handle worktrees/submodules where .git is a file)
   const gitPath = path.resolve(projectRoot, '.git');
